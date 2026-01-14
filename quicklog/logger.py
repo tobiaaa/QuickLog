@@ -173,11 +173,16 @@ class QuickLog:
 
         fig, axes = plt.subplots(rows, cols, figsize=(4 * cols, 3 * rows), squeeze=False)
 
+        smoothing = self._get_config("smoothing")
         for idx, (name, data) in enumerate(self.logs.items()):
             row, col = divmod(idx, cols)
             ax = axes[row][col]
             steps, values = zip(*data)
-            ax.plot(steps, self._smooth(values))
+            if smoothing > 0:
+                ax.plot(steps, values, alpha=0.3)
+                ax.plot(steps, self._smooth(values))
+            else:
+                ax.plot(steps, values)
             ax.set_title(name)
             ax.set_xlabel("step")
 
@@ -195,10 +200,15 @@ class QuickLog:
         if not ext:
             ext = ".png"
 
+        smoothing = self._get_config("smoothing")
         for name, data in self.logs.items():
             fig, ax = plt.subplots(figsize=(6, 4))
             steps, values = zip(*data)
-            ax.plot(steps, self._smooth(values))
+            if smoothing > 0:
+                ax.plot(steps, values, alpha=0.3)
+                ax.plot(steps, self._smooth(values))
+            else:
+                ax.plot(steps, values)
             ax.set_title(name)
             ax.set_xlabel("step")
             plt.tight_layout()
@@ -210,9 +220,14 @@ class QuickLog:
         """Plot all metrics on a single plot."""
         fig, ax = plt.subplots(figsize=(8, 5))
 
+        smoothing = self._get_config("smoothing")
         for name, data in self.logs.items():
             steps, values = zip(*data)
-            ax.plot(steps, self._smooth(values), label=name)
+            if smoothing > 0:
+                ax.plot(steps, values, alpha=0.3)
+                ax.plot(steps, self._smooth(values), label=name)
+            else:
+                ax.plot(steps, values, label=name)
 
         ax.set_xlabel("step")
         ax.legend()
