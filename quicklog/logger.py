@@ -179,8 +179,8 @@ class QuickLog:
             ax = axes[row][col]
             steps, values = zip(*data)
             if smoothing > 0:
-                ax.plot(steps, values, alpha=0.3)
-                ax.plot(steps, self._smooth(values))
+                line, = ax.plot(steps, self._smooth(values))
+                ax.plot(steps, values, alpha=0.3, color=line.get_color())
             else:
                 ax.plot(steps, values)
             ax.set_title(name)
@@ -205,8 +205,8 @@ class QuickLog:
             fig, ax = plt.subplots(figsize=(6, 4))
             steps, values = zip(*data)
             if smoothing > 0:
-                ax.plot(steps, values, alpha=0.3)
-                ax.plot(steps, self._smooth(values))
+                line, = ax.plot(steps, self._smooth(values))
+                ax.plot(steps, values, alpha=0.3, color=line.get_color())
             else:
                 ax.plot(steps, values)
             ax.set_title(name)
@@ -224,8 +224,8 @@ class QuickLog:
         for name, data in self.logs.items():
             steps, values = zip(*data)
             if smoothing > 0:
-                ax.plot(steps, values, alpha=0.3)
-                ax.plot(steps, self._smooth(values), label=name)
+                line, = ax.plot(steps, self._smooth(values), label=name)
+                ax.plot(steps, values, alpha=0.3, color=line.get_color())
             else:
                 ax.plot(steps, values, label=name)
 
