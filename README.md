@@ -65,6 +65,7 @@ log.configure(
     layout="subplots",   # "subplots" (default), "separate", or "overlaid"
     path="metrics.png",  # output path (default: "quicklog.png")
     dpi=150,             # image resolution (default: 150)
+    smoothing=0.6,       # EMA smoothing factor, 0-1 (default: 0 = none)
 )
 ```
 
@@ -75,6 +76,7 @@ export QUICKLOG_OUTPUT=both
 export QUICKLOG_LAYOUT=overlaid
 export QUICKLOG_PATH=results.pdf
 export QUICKLOG_DPI=300
+export QUICKLOG_SMOOTHING=0.6
 ```
 
 ### Layout Modes

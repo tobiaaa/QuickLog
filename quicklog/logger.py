@@ -19,6 +19,7 @@ class QuickLog:
         "layout": "subplots",   # subplots, separate, overlaid
         "path": "quicklog.png",
         "dpi": 150,
+        "smoothing": 0.0,       # EMA smoothing factor (0 = none, 0.9 = heavy)
     }
 
     def __new__(cls):
@@ -44,6 +45,7 @@ class QuickLog:
             layout: "subplots" (default), "separate", or "overlaid"
             path: Output file path (default: "quicklog.png")
             dpi: Image resolution (default: 150)
+            smoothing: EMA smoothing factor, 0-1 (default: 0 = none)
         """
         valid_keys = set(self._defaults.keys())
         for key in kwargs:
@@ -129,6 +131,19 @@ class QuickLog:
     def __repr__(self):
         return f"QuickLog(metrics={list(self.logs.keys())})"
 
+    def _smooth(self, values):
+        """Apply exponential moving average smoothing."""
+        smoothing = self._get_config("smoothing")
+        if smoothing <= 0:
+            return values
+
+        smoothed = []
+        last = values[0]
+        for v in values:
+            last = smoothing * last + (1 - smoothing) * v
+            smoothed.append(last)
+        return smoothed
+
     def _finalize(self):
         """Called automatically at exit to visualize logged values."""
         if not self.logs:
@@ -162,7 +177,7 @@ class QuickLog:
             row, col = divmod(idx, cols)
             ax = axes[row][col]
             steps, values = zip(*data)
-            ax.plot(steps, values)
+            ax.plot(steps, self._smooth(values))
             ax.set_title(name)
             ax.set_xlabel("step")
 
@@ -183,7 +198,7 @@ class QuickLog:
         for name, data in self.logs.items():
             fig, ax = plt.subplots(figsize=(6, 4))
             steps, values = zip(*data)
-            ax.plot(steps, values)
+            ax.plot(steps, self._smooth(values))
             ax.set_title(name)
             ax.set_xlabel("step")
             plt.tight_layout()
@@ -197,7 +212,7 @@ class QuickLog:
 
         for name, data in self.logs.items():
             steps, values = zip(*data)
-            ax.plot(steps, values, label=name)
+            ax.plot(steps, self._smooth(values), label=name)
 
         ax.set_xlabel("step")
         ax.legend()
