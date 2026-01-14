@@ -1,8 +1,11 @@
 """Core logging functionality for QuickLog."""
+import logging
 
 import atexit
 import math
 import os
+
+_logger = logging.getLogger('QuickLog')
 
 
 class QuickLog:
@@ -12,9 +15,10 @@ class QuickLog:
 
     # Configuration defaults
     _defaults = {
-        "output": "file",      # file, show, both
-        "layout": "subplots",  # subplots, separate, overlaid
+        "output": "file",       # file, show, both
+        "layout": "subplots",   # subplots, separate, overlaid
         "path": "quicklog.png",
+        "dpi": 150,
     }
 
     def __new__(cls):
@@ -39,6 +43,7 @@ class QuickLog:
             output: "file" (default), "show", or "both"
             layout: "subplots" (default), "separate", or "overlaid"
             path: Output file path (default: "quicklog.png")
+            dpi: Image resolution (default: 150)
         """
         valid_keys = set(self._defaults.keys())
         for key in kwargs:
@@ -52,7 +57,12 @@ class QuickLog:
             return self._config[key]
         env_key = f"QUICKLOG_{key.upper()}"
         if env_key in os.environ:
-            return os.environ[env_key]
+            value = os.environ[env_key]
+            # Coerce to same type as default
+            default_type = type(self._defaults[key])
+            if default_type in (int, float):
+                return default_type(value)
+            return value
         return self._defaults[key]
 
     def __call__(self, name=None, value=None, *, step=None, **kwargs):
@@ -197,8 +207,9 @@ class QuickLog:
     def _output(self, plt, fig, path, output):
         """Handle output based on configuration."""
         if output in ("file", "both"):
-            fig.savefig(path, dpi=150)
-            print(f"QuickLog: saved {path}")
+            dpi = self._get_config("dpi")
+            fig.savefig(path, dpi=dpi)
+            _logger.info(f"QuickLog: saved {path}")
         if output in ("show", "both"):
             plt.show()
         plt.close(fig)

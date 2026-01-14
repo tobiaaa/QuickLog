@@ -64,6 +64,7 @@ log.configure(
     output="file",       # "file" (default), "show", or "both"
     layout="subplots",   # "subplots" (default), "separate", or "overlaid"
     path="metrics.png",  # output path (default: "quicklog.png")
+    dpi=150,             # image resolution (default: 150)
 )
 ```
 
@@ -73,6 +74,7 @@ Or via environment variables:
 export QUICKLOG_OUTPUT=both
 export QUICKLOG_LAYOUT=overlaid
 export QUICKLOG_PATH=results.pdf
+export QUICKLOG_DPI=300
 ```
 
 ### Layout Modes
