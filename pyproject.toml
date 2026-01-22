@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quicklog"
-version = "0.1.1"
+version = "0.2.0"
 description = "Minimal logging and visualization of scalar values for ML experiments"
 readme = "README.md"
 requires-python = ">=3.8"
